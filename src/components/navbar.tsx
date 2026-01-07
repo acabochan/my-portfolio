@@ -9,7 +9,8 @@ export default function Navbar() {
   const [buttonPositions, setButtonPositions] = useState({
     work: { x: 0, y: 0 },
     about: { x: 0, y: 0 },
-    resume: { x: 0, y: 0 }
+    resume: { x: 0, y: 0 },
+    skills: { x: 0, y: 0 }
   });
 
   const router = useRouter();

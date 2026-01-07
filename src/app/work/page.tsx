@@ -1,162 +1,331 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
-import Image from "next/image";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 
 export default function Work() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
   const [hoveredProject, setHoveredProject] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [cardPositions, setCardPositions] = useState({});
-  const [draggedCard, setDraggedCard] = useState(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const filterParam = searchParams.get("filter");
+    if (filterParam && ["all", "code", "art"].includes(filterParam)) {
+      setSelectedFilter(filterParam);
+    }
+  }, [searchParams]);
 
   const filters = [
     { id: "all", label: "All" },
     { id: "code", label: "Code" },
-    { id: "design", label: "Design" }
+    { id: "art", label: "Art" },
   ];
+
+  // Helper: navigate for internal links, open new tab for external links
+  const goToProject = (project) => {
+    if (!project?.link) return;
+
+    const isExternal = /^https?:\/\//i.test(project.link);
+    if (isExternal) {
+      window.open(project.link, "_blank", "noopener,noreferrer");
+    } else {
+      router.push(project.link);
+    }
+  };
+
+  const onLinkKeyDown = (e, project) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goToProject(project);
+    }
+  };
 
   const projects = [
     {
       id: 1,
-      title: "E-commerce Website",
-      description: "A full-stack e-commerce platform built with Next.js",
+      title: "ASL ABC's",
+      description:
+        "An interactive learning application that helps users practice ASL fingerspelling",
       category: "code",
-      image: "/images/square.png"
+      image: "/images/ASL_ABC.png",
+      tech: ["React", "Next.js", "TypeScript"],
+      link: "https://github.com/trinchngk/OOP-Final",
+    },
+    {
+      id: 10,
+      title: "Can I Dance Too? (Pwede rin ba akong sumayaw?)",
+      description: "A book.",
+      category: "art",
+      image: "/images/cover.png",
+      link: "/projects/can-i-dance-too",
     },
     {
       id: 2,
-      title: "Mobile App Design",
-      description: "UI/UX design for a fitness tracking mobile application",
-      category: "design",
-      image: "/images/square.png"
+      title: "AngioPilot",
+      description:
+        "An XR training simulation in Xcode using RealityKit and Swift for Apple Vision Pro, designed to replicate vascular catheterization procedures in a 3D immersive environment",
+      category: "code",
+      image: "/images/angio.png",
+      tech: ["Swift", "RealityKit", "Xcode"],
+      link: "https://www.linkedin.com/feed/update/urn:li:activity:7401239328380620800/",
+    },
+    {
+      id: 11,
+      title: "Manananggal",
+      description: "A zine.",
+      category: "art",
+      image: "/images/mananangal.jpg",
+      link: "/projects/manananggal",
     },
     {
       id: 3,
-      title: "React Dashboard",
-      description: "Admin dashboard with real-time analytics",
+      title: "Play2Learn",
+      description:
+        "Built with a team of four during Brown University's 24-hour hackathon, Play2Learn provides educational mini-games and quizzes across a variety of subjects.",
       category: "code",
-      image: "/images/square.png"
+      image: "/images/Play2Learn.png",
+      tech: ["JavaScript", "React", "Firebase"],
+      link: "https://github.com/aprameyak/play2learn?tab=readme-ov-file",
+    },
+    {
+      id: 12,
+      title: "Sigarilyo",
+      description: "A zine.",
+      category: "art",
+      image: "/images/sigarilyo.jpg",
+      link: "/projects/sigarilyo",
     },
     {
       id: 4,
-      title: "Brand Identity",
-      description: "Complete brand identity design for startup",
-      category: "design",
-      image: "/images/square.png"
-    }
+      title: "LGBTQ+ Senior Housing Web App",
+      description:
+        "A user-friendly scheduling and community web application designed for LGBTQ+ senior housing residents.",
+      category: "code",
+      image: "/images/LGBTQ.png",
+      tech: ["React", "Node.js", "PostgreSQL"],
+      link: "https://lgbtq-senior-housing.vercel.app/",
+    },
+    {
+      id: 13,
+      title: "Out For Lunch",
+      description: "Interactive Web.",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/out-for-lunch",
+    },
+    {
+      id: 5,
+      title: "Denoising Speech with MathWorks",
+      description:
+        "A deep learning project focused on suppressing background noise from speech signals using a CNN-LSTM model.",
+      category: "code",
+      image: "/images/matlab.png",
+      tech: ["MATLAB", "Deep Learning", "CNN-LSTM"],
+      link: "https://github.com/BTTAI-9/Team-9",
+    },
+    {
+      id: 14,
+      title: "Thanks For Resisting",
+      description: "Bags",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/thanks-for-resisting",
+    },
+    {
+      id: 6,
+      title: "Trial & Error",
+      description:
+        "A point and click detective game set in a sci fi world designed to teach kids how to think critically for false information.",
+      category: "code",
+      image: "/images/trial.png",
+      tech: ["Unity", "C#", "Ink"],
+      link: "https://duwendie.itch.io/trial-error",
+    },
+    {
+      id: 15,
+      title: "A Guide To Nightly Prayers",
+      description: "brochure",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/nightly-prayers",
+    },
+    {
+      id: 7,
+      title: "Good Samaritan Shelter Website Redesign",
+      description:
+        "Led as the product and design manager for the redesign and implementation of Good Samaritan Shelter's website and implemented a searchable database of services",
+      category: "code",
+      image: "/images/goodsam.png",
+      tech: ["WordPress", "PHP", "JavaScript"],
+      link: "https://www.goodsamaritanshelter.org/",
+    },
+    {
+      id: 16,
+      title: "Illustrations",
+      description: "Illustrations",
+      category: "art",
+      image: "/images/self_destruction.png",
+      link: "/projects/illustrations",
+    },
+    {
+      id: 8,
+      title: "Procedural Gear Generator",
+      description:
+        "Procedural Tool based from Maya's primitive polygon Pipes to create customizable gears for 3D modeling and animation projects.",
+      category: "code",
+      image: "/images/square.png",
+      tech: ["Python", "Maya API", "Procedural"],
+      link: "/projects/procedural-gear-generator",
+    },
+    {
+      id: 17,
+      title: "Root",
+      description: "App design",
+      category: "art",
+      image: "/images/root.png",
+      link: "/projects/root",
+    },
+    {
+      id: 9,
+      title: "Real-Time 3D Rendering Engine",
+      description:
+        "A real-time 3D rendering project, featuring custom shader programming, dynamic lighting and shadows, textured 3D models, and user-controlled camera navigation.",
+      category: "code",
+      image: "/images/square.png",
+      tech: ["C++", "OpenGL", "GLSL"],
+      link: "/projects/realtime-rendering-engine",
+    },
+    {
+      id: 21,
+      title: "Lets Play Dolls",
+      description: "App design",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/lets-play-dolls",
+    },
+    {
+      id: 18,
+      title: "Women In Tech Brand Design",
+      description: "App design",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/women-in-tech-brand",
+    },
+    {
+      id: 19,
+      title: "Game of I_____tion",
+      description: "App design",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/game-of-imitation",
+    },
+    {
+      id: 20,
+      title: "Predator",
+      description: "Web E",
+      category: "art",
+      image: "/images/square.png",
+      link: "/projects/predator",
+    },
   ];
 
   const filteredProjects = useMemo(() => {
     return selectedFilter === "all"
       ? projects
-      : projects.filter(project => project.category === selectedFilter);
-  }, [selectedFilter]);
+      : projects.filter((project) => project.category === selectedFilter);
+  }, [selectedFilter, projects]);
 
-  // Initialize random positions for cards
   useEffect(() => {
-    if (viewMode === "messy" && containerRef.current) {
-      const container = containerRef.current;
-      const containerRect = container.getBoundingClientRect();
-      const newPositions = {};
-      
-      filteredProjects.forEach((project, index) => {
-        // Create a scattered, messy layout
-        const x = Math.random() * (containerRect.width - 320) + 20;
-        const y = Math.random() * 500 + 20 + (index * 80);
-        const rotation = (Math.random() - 0.5) * 20; // Random rotation between -10 and 10 degrees
-        
-        newPositions[project.id] = { x, y, rotation, zIndex: index + 1 };
-      });
-      
-      setCardPositions(newPositions);
-    }
-  }, [viewMode, filteredProjects]);
-
-  // Handle mouse tracking for list view
-  useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e) =>
       setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
     if (viewMode === "list") {
-      document.addEventListener('mousemove', handleMouseMove);
-      return () => document.removeEventListener('mousemove', handleMouseMove);
+      document.addEventListener("mousemove", handleMouseMove);
+      return () => document.removeEventListener("mousemove", handleMouseMove);
     }
   }, [viewMode]);
-
-  // Handle dragging for messy view
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (draggedCard && viewMode === "messy") {
-        const newX = e.clientX - dragOffset.x;
-        const newY = e.clientY - dragOffset.y;
-        
-        setCardPositions(prev => ({
-          ...prev,
-          [draggedCard]: {
-            ...prev[draggedCard],
-            x: newX,
-            y: newY,
-            zIndex: Math.max(...Object.values(prev).map(p => p.zIndex || 0)) + 1
-          }
-        }));
-      }
-    };
-
-    const handleMouseUp = () => {
-      setDraggedCard(null);
-      setDragOffset({ x: 0, y: 0 });
-    };
-
-    if (draggedCard) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [draggedCard, dragOffset, viewMode]);
-
-  const handleCardMouseDown = (e, projectId) => {
-    if (viewMode !== "messy") return;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
-    
-    setDraggedCard(projectId);
-    setDragOffset({ x: offsetX, y: offsetY });
-    
-    // Bring card to front
-    setCardPositions(prev => ({
-      ...prev,
-      [projectId]: {
-        ...prev[projectId],
-        zIndex: Math.max(...Object.values(prev).map(p => p.zIndex || 0)) + 1
-      }
-    }));
-  };
 
   return (
     <div style={{ backgroundColor: "#f2ede7", minHeight: "100vh" }}>
       <style jsx>{`
+        /* Code tech pills (bottom of image, appear on hover) */
+        .code-tech-row {
+          position: absolute;
+          left: 14px;
+          right: 14px;
+          bottom: 14px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          justify-content: flex-start;
+          pointer-events: none;
+
+          opacity: 0;
+          transform: translateY(6px);
+          transition: opacity 220ms ease, transform 220ms ease;
+        }
+
+        /* List pop-in */
+        @keyframes listPopIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .list-row {
+          opacity: 0;
+          transform: translateY(10px);
+          animation: listPopIn 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+        }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .list-row {
+            animation: none;
+            opacity: 1;
+            transform: none;
+          }
+        }
+
+        .grid-card:hover .code-tech-row {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .tech-pill {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: #d55555;
+          color: #f2ede7;
+          font-size: 0.875rem; /* text-sm */
+          line-height: 1.25rem;
+          font-weight: 500;
+          white-space: nowrap;
+          box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+        }
+
         @font-face {
-          font-family: 'Maragsa';
-          src: url('./fonts/maragsa.otf') format('opentype'),
-               url('/fonts/maragsa.otf') format('opentype');
+          font-family: "Maragsa";
+          src: url("/fonts/maragsa.otf") format("opentype");
           font-display: swap;
           font-weight: normal;
           font-style: normal;
         }
 
         .maragsa-font {
-          font-family: 'Maragsa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: "Maragsa", -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, sans-serif;
         }
 
         .wave-button {
@@ -186,6 +355,18 @@ export default function Work() {
         .grid-card {
           position: relative;
           transition: all 0.3s ease;
+          overflow: hidden;
+          border-radius: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          height: 420px;
+          background: transparent;
+          cursor: pointer;
+          outline: none;
+        }
+
+        .grid-card:focus-visible {
+          box-shadow: 0 0 0 3px rgba(213, 85, 85, 0.35);
         }
 
         .grid-card:hover {
@@ -193,28 +374,54 @@ export default function Work() {
           box-shadow: 5px 5px 0 #d55555;
         }
 
-        .messy-card {
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          cursor: grab;
+        .card-image {
+          position: relative;
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+          border-radius: 0.5rem;
         }
 
-        .messy-card:hover {
-          transform: scale(1.02) !important;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+        .card-image-bg {
+          position: absolute;
+          inset: 0;
+          background-size: cover;
+          background-position: center;
         }
 
-        .messy-card:active {
-          cursor: grabbing;
+        .code-bottom {
+          background: #f2ede7;
+          padding: 18px 20px;
+          border-bottom-left-radius: 0.5rem;
+          border-bottom-right-radius: 0.5rem;
         }
 
-        .messy-card.dragging {
-          transition: none;
-          transform: scale(1.05) !important;
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+        /* Art overlay hover (LIGHT offwhite overlay, RED title) */
+        .art-overlay {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          padding: 18px;
+
+          background: rgba(242, 237, 231, 0.65); /* offwhite tint */
+          backdrop-filter: blur(4px);
+
+          opacity: 0;
+          transform: translateY(6px);
+          transition: opacity 0.22s ease, transform 0.22s ease;
+          pointer-events: none;
+        }
+
+        .grid-card:hover .art-overlay {
+          opacity: 1;
+          transform: translateY(0);
         }
       `}</style>
 
       <Navbar />
+
       <main className="px-10 md:px-12 lg:px-16 xl:px-30 pt-15 pb-6">
         <div className="flex justify-between items-center mb-8">
           <div className="flex gap-4">
@@ -224,15 +431,13 @@ export default function Work() {
                 onClick={() => setSelectedFilter(filter.id)}
                 className={`
                   wave-button px-6 py-3 rounded-full border-2 transition-colors duration-300 
-                  ${selectedFilter === filter.id
-                    ? 'bg-[#d55555] border-[#d55555] text-[#f2ede7]'
-                    : 'bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]'
+                  ${
+                    selectedFilter === filter.id
+                      ? "bg-[#d55555] border-[#d55555] text-[#f2ede7]"
+                      : "bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]"
                   }
                 `}
-                style={{
-                  fontSize: '15.2px',
-                  fontWeight: '500'
-                }}
+                style={{ fontSize: "15.2px", fontWeight: "500" }}
               >
                 <span>{filter.label}</span>
                 <div className="wave-fill" />
@@ -245,9 +450,10 @@ export default function Work() {
               onClick={() => setViewMode("grid")}
               className={`
                 wave-button p-3 rounded-full border-2 transition-colors duration-300
-                ${viewMode === "grid"
-                  ? 'bg-[#d55555] border-[#d55555] text-[#f2ede7]'
-                  : 'bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]'
+                ${
+                  viewMode === "grid"
+                    ? "bg-[#d55555] border-[#d55555] text-[#f2ede7]"
+                    : "bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]"
                 }
               `}
             >
@@ -258,29 +464,13 @@ export default function Work() {
             </button>
 
             <button
-              onClick={() => setViewMode("messy")}
-              className={`
-                wave-button p-3 rounded-full border-2 transition-colors duration-300
-                ${viewMode === "messy"
-                  ? 'bg-[#d55555] border-[#d55555] text-[#f2ede7]'
-                  : 'bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]'
-                }
-              `}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" transform="rotate(5 12 12)" />
-                <path d="M6 4h12v2H6zm2 5h8v2H8zm-1 5h10v2H7z" transform="rotate(-3 12 12)" />
-              </svg>
-              <div className="wave-fill" />
-            </button>
-
-            <button
               onClick={() => setViewMode("list")}
               className={`
                 wave-button p-3 rounded-full border-2 transition-colors duration-300
-                ${viewMode === "list"
-                  ? 'bg-[#d55555] border-[#d55555] text-[#f2ede7]'
-                  : 'bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]'
+                ${
+                  viewMode === "list"
+                    ? "bg-[#d55555] border-[#d55555] text-[#f2ede7]"
+                    : "bg-transparent border-[#d55555] text-[#d55555] hover:text-[#f2ede7]"
                 }
               `}
             >
@@ -294,56 +484,56 @@ export default function Work() {
 
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-15">
-            {filteredProjects.map((project) => (
-              <div key={project.id} className="grid-card bg-[#f2ede7] rounded-lg overflow-hidden">
-                <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                  <div className="text-gray-500 text-sm font-medium maragsa-font">
-                    {project.category === "code" ? "💻" : "🎨"} {project.title}
-                  </div>
-                </div>
-                <div className="p-6 bg-[#f2ede7]">
-                  <h3 className="text-lg font-semibold mb-2 maragsa-font text-[#d55555]">{project.title}</h3>
-                  <p className="text-gray-600">{project.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {viewMode === "messy" && (
-          <div 
-            ref={containerRef}
-            className="relative mt-15"
-            style={{ height: "800px", overflow: "hidden" }}
-          >
             {filteredProjects.map((project) => {
-              const position = cardPositions[project.id] || { x: 0, y: 0, rotation: 0, zIndex: 1 };
+              const isArt = project.category === "art";
+              const tech = Array.isArray(project.tech) ? project.tech : [];
+
               return (
                 <div
                   key={project.id}
-                  className={`messy-card absolute w-80 bg-white rounded-xl shadow-lg overflow-hidden select-none ${
-                    draggedCard === project.id ? 'dragging' : ''
-                  }`}
-                  style={{
-                    left: `${position.x}px`,
-                    top: `${position.y}px`,
-                    transform: `rotate(${position.rotation}deg)`,
-                    zIndex: position.zIndex,
-                    boxShadow: draggedCard === project.id 
-                      ? '0 15px 35px rgba(0, 0, 0, 0.2)' 
-                      : '0 4px 15px rgba(0, 0, 0, 0.1)'
-                  }}
-                  onMouseDown={(e) => handleCardMouseDown(e, project.id)}
+                  className="grid-card"
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`Open ${project.title}`}
+                  onClick={() => goToProject(project)}
+                  onKeyDown={(e) => onLinkKeyDown(e, project)}
                 >
-                  <div className="relative h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-b border-gray-200">
-                  </div>
-                  <div className="p-6 bg-[#d55555]">
-                    <h3 className="text-lg font-semibold mb-2 maragsa-font text-[#f2ede7]">{project.title}</h3>
-                    <p className="text-[#f2ede7] text-sm">{project.description}</p>
-                    <div className="mt-3">
-                    </div>
+                  <div className="card-image">
+                    <div
+                      className="card-image-bg"
+                      style={{ backgroundImage: `url(${project.image})` }}
+                    />
+
+                    {!isArt && tech.length > 0 && (
+                      <div className="code-tech-row" aria-hidden="true">
+                        {tech.slice(0, 6).map((t) => (
+                          <span key={`${project.id}-${t}`} className="tech-pill">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {isArt && (
+                      <div className="art-overlay">
+                        <h3 className="maragsa-font text-[#d55555] text-lg font-semibold leading-tight">
+                          {project.title}
+                        </h3>
+                        <p className="text-[#d55555] text-sm mt-1 opacity-90">
+                          {project.description}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
+                  {!isArt && (
+                    <div className="code-bottom">
+                      <h3 className="text-base font-semibold mb-2 maragsa-font text-[#d55555]">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-gray-600">{project.description}</p>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -352,28 +542,34 @@ export default function Work() {
 
         {viewMode === "list" && (
           <div className="space-y-8 mt-15">
-            {filteredProjects.map((project) => (
+            {filteredProjects.map((project, index) => (
               <div
                 key={project.id}
-                className="flex items-center justify-between py-4 cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                className="list-row flex items-center justify-between py-4 cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                style={{ animationDelay: `${index * 55}ms` }}
                 onMouseEnter={() => setHoveredProject(project)}
                 onMouseLeave={() => setHoveredProject(null)}
+                onClick={() => goToProject(project)}
+                role="link"
+                tabIndex={0}
+                aria-label={`Open ${project.title}`}
+                onKeyDown={(e) => onLinkKeyDown(e, project)}
               >
-                {/* Title on the left */}
-                <h3 className="maragsa-font text-[#d55555]" style={{ fontSize: '54.3px', fontWeight: '500' }}>
+                <h3
+                  className="maragsa-font text-[#d55555]"
+                  style={{ fontSize: "50px", fontWeight: "500" }}
+                >
                   {project.title}
                 </h3>
-                
-                {/* Category in the middle-right */}
+
                 <div className="flex-1 flex justify-center">
-                  <span className="maragsa-font text-[#d55555]" style={{ fontSize: '17px' }}>
+                  <span className="maragsa-font text-[#d55555]" style={{ fontSize: "15px" }}>
                     {project.category}
                   </span>
                 </div>
-                
-                {/* Description on the far right */}
+
                 <div className="max-w-xs text-right">
-                  <p className="text-[#d55555]" style={{ fontSize: '17px' }}>
+                  <p className="text-[#d55555]" style={{ fontSize: "17px" }}>
                     {project.description}
                   </p>
                 </div>
@@ -390,10 +586,15 @@ export default function Work() {
               top: `${mousePosition.y - 80}px`,
             }}
           >
-            <div className="w-64 h-48 bg-gray-300 rounded-lg shadow-xl border-2 border-white overflow-hidden">
-              <div className="w-full h-full bg-gray-400 flex items-center justify-center text-gray-600 text-base font-medium maragsa-font">
-                {hoveredProject.title}
-              </div>
+            <div className="w-100 h-65 bg-gray-300 rounded-lg shadow-xl overflow-hidden">
+              <div
+                className="w-full h-full"
+                style={{
+                  backgroundImage: `url(${hoveredProject.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
             </div>
           </div>
         )}

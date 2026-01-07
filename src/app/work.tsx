@@ -20,29 +20,29 @@ export default function Work() {
   const projects = [
     {
       id: 1,
-      title: "E-commerce Website",
-      description: "A full-stack e-commerce platform built with Next.js",
+      title: "AngioPilot",
+      description: "A apple vision app that similates vascular catheterization procedures to allow students to built confidence before entering the cath lab",
       category: "code",
       image: "/images/project1.jpg"
     },
     {
       id: 2,
-      title: "Mobile App Design",
-      description: "UI/UX design for a fitness tracking mobile application",
+      title: "Rooted",
+      description: "UI/UX design an app that pairs volunteers with non-profits for community service, won first place in the Tufts Producthon 2025",
       category: "design",
       image: "/images/project2.jpg"
     },
     {
       id: 3,
-      title: "React Dashboard",
-      description: "Admin dashboard with real-time analytics",
+      title: "Play2Learn",
+      description: "A a educational web application in Brown University’s 24-hour hackathon that quizzes users on various subjects through interactive games",
       category: "code",
       image: "/images/project3.jpg"
     },
     {
       id: 4,
-      title: "Brand Identity",
-      description: "Complete brand identity design for startup",
+      title: "Mananngal",
+      description: "A photographic zine that uses the filipino myth of the mananggal to explore the relationship between growing up and nostalgia",
       category: "design",
       image: "/images/project4.jpg"
     }
