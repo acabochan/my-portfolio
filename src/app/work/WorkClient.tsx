@@ -53,7 +53,7 @@ export default function Work() {
       description:
         "An interactive learning application that helps users practice ASL fingerspelling",
       category: "code",
-      image: "/images/ASL_ABC.png",
+      image: "/my-portfolio/images/ASL_ABC.png",
       tech: ["React", "Next.js", "TypeScript"],
       link: "https://github.com/trinchngk/OOP-Final",
     },
@@ -62,7 +62,7 @@ export default function Work() {
       title: "Can I Dance Too? (Pwede rin ba akong sumayaw?)",
       description: "A book.",
       category: "art",
-      image: "/images/cover.png",
+      image: "/my-portfolio/images/cover.png",
     },
     {
       id: 2,
@@ -70,7 +70,7 @@ export default function Work() {
       description:
         "An XR training simulation in Xcode using RealityKit and Swift for Apple Vision Pro, designed to replicate vascular catheterization procedures in a 3D immersive environment",
       category: "code",
-      image: "/images/angio.png",
+      image: "/my-portfolio/images/angio.png",
       tech: ["Swift", "RealityKit", "Xcode"],
       link: "https://www.linkedin.com/feed/update/urn:li:activity:7401239328380620800/",
     },
@@ -79,7 +79,7 @@ export default function Work() {
       title: "Manananggal",
       description: "A zine.",
       category: "art",
-      image: "/images/mananangal.jpg",
+      image: "/my-portfolio/images/mananangal.jpg",
     },
     {
       id: 3,
@@ -87,7 +87,7 @@ export default function Work() {
       description:
         "Built with a team of four during Brown University's 24-hour hackathon, Play2Learn provides educational mini-games and quizzes across a variety of subjects.",
       category: "code",
-      image: "/images/Play2Learn.png",
+      image: "/my-portfolio/images/Play2Learn.png",
       tech: ["JavaScript", "React", "Firebase"],
       link: "https://github.com/aprameyak/play2learn?tab=readme-ov-file",
     },
@@ -96,7 +96,7 @@ export default function Work() {
       title: "Sigarilyo",
       description: "A zine.",
       category: "art",
-      image: "/images/sigarilyo.jpg",
+      image: "/my-portfolio/images/sigarilyo.jpg",
     },
     {
       id: 4,
@@ -104,7 +104,7 @@ export default function Work() {
       description:
         "A user-friendly scheduling and community web application designed for LGBTQ+ senior housing residents.",
       category: "code",
-      image: "/images/LGBTQ.png",
+      image: "/my-portfolio/images/LGBTQ.png",
       tech: ["React", "Node.js", "PostgreSQL"],
       link: "https://lgbtq-senior-housing.vercel.app/",
     },
@@ -113,7 +113,7 @@ export default function Work() {
       title: "Thanks For Resisting",
       description: "Bags",
       category: "art",
-      image: "/images/ThankYou.jpg",
+      image: "/my-portfolio/images/ThankYou.jpg",
     },
     {
       id: 5,
@@ -121,7 +121,7 @@ export default function Work() {
       description:
         "A deep learning project focused on suppressing background noise from speech signals using a CNN-LSTM model.",
       category: "code",
-      image: "/images/matlab.png",
+      image: "/my-portfolio/images/matlab.png",
       tech: ["MATLAB", "Deep Learning", "CNN-LSTM"],
       link: "https://github.com/BTTAI-9/Team-9",
     },
@@ -130,7 +130,7 @@ export default function Work() {
       title: "Illustrations",
       description: "Illustrations",
       category: "art",
-      image: "/images/self_destruction.png",
+      image: "/my-portfolio/images/self_destruction.png",
     },
     {
       id: 6,
@@ -138,7 +138,7 @@ export default function Work() {
       description:
         "A point and click detective game set in a sci fi world designed to teach kids how to think critically for false information.",
       category: "code",
-      image: "/images/trial.png",
+      image: "/my-portfolio/images/trial.png",
       tech: ["Unity", "C#", "Ink"],
       link: "https://duwendie.itch.io/trial-error",
     },
@@ -147,7 +147,7 @@ export default function Work() {
       title: "Lets Play Dolls",
       description: "App design",
       category: "art",
-      image: "/images/dolls.jpg",
+      image: "/my-portfolio/images/dolls.jpg",
     },
     {
       id: 7,
@@ -155,7 +155,7 @@ export default function Work() {
       description:
         "Led as the product and design manager for the redesign and implementation of Good Samaritan Shelter's website and implemented a searchable database of services",
       category: "code",
-      image: "/images/goodsam.png",
+      image: "/my-portfolio/images/goodsam.png",
       tech: ["WordPress", "PHP", "JavaScript"],
       link: "https://www.goodsamaritanshelter.org/",
     },
@@ -164,14 +164,14 @@ export default function Work() {
       title: "Root",
       description: "App design",
       category: "art",
-      image: "/images/root.png",
+      image: "/my-portfolio/images/root.png",
     },
     {
       id: 18,
       title: "Women In Tech Brand Design",
       description: "App design",
       category: "art",
-      image: "/images/WIT.png",
+      image: "/my-portfolio/images/WIT.png",
       link: "https://www.tuftswit.com/",
     },
   ];

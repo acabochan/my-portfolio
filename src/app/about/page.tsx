@@ -370,7 +370,7 @@ useEffect(() => {
         {/* Left side */}
         <div style={{ width: "40%", position: "relative", overflow: "hidden" }}>
           <Image
-            src="/me.jpg"
+            src="/my-portfolio/me.jpg"
             alt="Photo of Andrea"
             fill
             style={{ objectFit: "cover", objectPosition: "center" }}
@@ -443,7 +443,7 @@ useEffect(() => {
                     }}
                   >
                     <Image
-                      src="/arrow.png"
+                      src="/my-portfolio/arrow.png"
                       alt="Toggle section"
                       width={40}
                       height={40}

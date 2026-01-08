@@ -11,15 +11,15 @@ const IntroSection = () => {
 
   const images = useMemo(
     () => [
-      "/images/angio.png",
-      "/images/ASL_ABC.png",
-      "/images/dolls.jpg",
-      "/images/goodsam.png",
-      "/images/Play2Learn.png",
-      "/images/sigarilyo.jpg",
-      "/images/ThankYou.jpg",
-      "/images/WIT.png",
-      "/images/trial.png",
+      "/my-portfolio/images/angio.png",
+      "/my-portfolio/images/ASL_ABC.png",
+      "/my-portfolio/images/dolls.jpg",
+      "/my-portfolio/images/goodsam.png",
+      "/my-portfolio/images/Play2Learn.png",
+      "/my-portfolio/images/sigarilyo.jpg",
+      "/my-portfolio/images/ThankYou.jpg",
+      "/my-portfolio/images/WIT.png",
+      "/my-portfolio/images/trial.png",
     ],
     []
   );

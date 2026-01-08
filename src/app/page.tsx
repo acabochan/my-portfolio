@@ -87,7 +87,7 @@ const DiceHomepage = () => {
         icon: "👤",
         color: "#f4a261",
         route: "/about",
-        preview: "/about_me.gif",
+        preview: "/my-portfolio/about_me.gif",
       },
       {
         id: "code",
@@ -95,7 +95,7 @@ const DiceHomepage = () => {
         icon: "</>",
         color: "#e76f51",
         route: "/work?filter=code",
-        preview: "/code.png",
+        preview: "/my-portfolio/code.png",
       },
       {
         id: "art",
@@ -103,7 +103,7 @@ const DiceHomepage = () => {
         icon: "✨",
         color: "#2a9d8f",
         route: "/work?filter=art",
-        preview: "/art.gif",
+        preview: "/my-portfolio/art.gif",
       },
     ],
     []
@@ -802,7 +802,7 @@ const DiceHomepage = () => {
             }}
           >
             <Image
-              src="/pix_star.png"
+              src="/my-portfolio/pix_star.png"
               alt=""
               width={90}
               height={90}
