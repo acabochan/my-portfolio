@@ -39,6 +39,7 @@ export default function Work() {
   };
 
   const onLinkKeyDown = (e, project) => {
+    if (!project?.link) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       goToProject(project);
@@ -62,7 +63,6 @@ export default function Work() {
       description: "A book.",
       category: "art",
       image: "/images/cover.png",
-      link: "/projects/can-i-dance-too",
     },
     {
       id: 2,
@@ -80,7 +80,6 @@ export default function Work() {
       description: "A zine.",
       category: "art",
       image: "/images/mananangal.jpg",
-      link: "/projects/manananggal",
     },
     {
       id: 3,
@@ -98,7 +97,6 @@ export default function Work() {
       description: "A zine.",
       category: "art",
       image: "/images/sigarilyo.jpg",
-      link: "/projects/sigarilyo",
     },
     {
       id: 4,
@@ -111,12 +109,11 @@ export default function Work() {
       link: "https://lgbtq-senior-housing.vercel.app/",
     },
     {
-      id: 13,
-      title: "Out For Lunch",
-      description: "Interactive Web.",
+      id: 14,
+      title: "Thanks For Resisting",
+      description: "Bags",
       category: "art",
-      image: "/images/square.png",
-      link: "/projects/out-for-lunch",
+      image: "/images/ThankYou.jpg",
     },
     {
       id: 5,
@@ -129,12 +126,11 @@ export default function Work() {
       link: "https://github.com/BTTAI-9/Team-9",
     },
     {
-      id: 14,
-      title: "Thanks For Resisting",
-      description: "Bags",
+      id: 16,
+      title: "Illustrations",
+      description: "Illustrations",
       category: "art",
-      image: "/images/square.png",
-      link: "/projects/thanks-for-resisting",
+      image: "/images/self_destruction.png",
     },
     {
       id: 6,
@@ -147,12 +143,11 @@ export default function Work() {
       link: "https://duwendie.itch.io/trial-error",
     },
     {
-      id: 15,
-      title: "A Guide To Nightly Prayers",
-      description: "brochure",
+      id: 21,
+      title: "Lets Play Dolls",
+      description: "App design",
       category: "art",
-      image: "/images/square.png",
-      link: "/projects/nightly-prayers",
+      image: "/images/dolls.jpg",
     },
     {
       id: 7,
@@ -165,72 +160,19 @@ export default function Work() {
       link: "https://www.goodsamaritanshelter.org/",
     },
     {
-      id: 16,
-      title: "Illustrations",
-      description: "Illustrations",
-      category: "art",
-      image: "/images/self_destruction.png",
-      link: "/projects/illustrations",
-    },
-    {
-      id: 8,
-      title: "Procedural Gear Generator",
-      description:
-        "Procedural Tool based from Maya's primitive polygon Pipes to create customizable gears for 3D modeling and animation projects.",
-      category: "code",
-      image: "/images/square.png",
-      tech: ["Python", "Maya API", "Procedural"],
-      link: "/projects/procedural-gear-generator",
-    },
-    {
       id: 17,
       title: "Root",
       description: "App design",
       category: "art",
       image: "/images/root.png",
-      link: "/projects/root",
-    },
-    {
-      id: 9,
-      title: "Real-Time 3D Rendering Engine",
-      description:
-        "A real-time 3D rendering project, featuring custom shader programming, dynamic lighting and shadows, textured 3D models, and user-controlled camera navigation.",
-      category: "code",
-      image: "/images/square.png",
-      tech: ["C++", "OpenGL", "GLSL"],
-      link: "/projects/realtime-rendering-engine",
-    },
-    {
-      id: 21,
-      title: "Lets Play Dolls",
-      description: "App design",
-      category: "art",
-      image: "/images/square.png",
-      link: "/projects/lets-play-dolls",
     },
     {
       id: 18,
       title: "Women In Tech Brand Design",
       description: "App design",
       category: "art",
-      image: "/images/square.png",
-      link: "/projects/women-in-tech-brand",
-    },
-    {
-      id: 19,
-      title: "Game of I_____tion",
-      description: "App design",
-      category: "art",
-      image: "/images/square.png",
-      link: "/projects/game-of-imitation",
-    },
-    {
-      id: 20,
-      title: "Predator",
-      description: "Web E",
-      category: "art",
-      image: "/images/square.png",
-      link: "/projects/predator",
+      image: "/images/WIT.png",
+      link: "https://www.tuftswit.com/",
     },
   ];
 
@@ -296,6 +238,7 @@ export default function Work() {
           }
         }
 
+        /* Hover effects should work for ALL cards (clickable or not) */
         .grid-card:hover .code-tech-row {
           opacity: 1;
           transform: translateY(0);
@@ -361,15 +304,19 @@ export default function Work() {
           flex-direction: column;
           height: 420px;
           background: transparent;
-          cursor: pointer;
+          cursor: default; /* default unless clickable */
           outline: none;
         }
 
-        .grid-card:focus-visible {
+        .grid-card.is-clickable {
+          cursor: pointer;
+        }
+
+        .grid-card.is-clickable:focus-visible {
           box-shadow: 0 0 0 3px rgba(213, 85, 85, 0.35);
         }
 
-        .grid-card:hover {
+        .grid-card.is-clickable:hover {
           transform: scale(1.05);
           box-shadow: 5px 5px 0 #d55555;
         }
@@ -414,9 +361,18 @@ export default function Work() {
           pointer-events: none;
         }
 
+        /* Hover overlay should work for ALL cards (clickable or not) */
         .grid-card:hover .art-overlay {
           opacity: 1;
           transform: translateY(0);
+        }
+
+        /* List row cursor only if clickable */
+        .list-row.is-clickable {
+          cursor: pointer;
+        }
+        .list-row:not(.is-clickable) {
+          cursor: default;
         }
       `}</style>
 
@@ -487,16 +443,25 @@ export default function Work() {
             {filteredProjects.map((project) => {
               const isArt = project.category === "art";
               const tech = Array.isArray(project.tech) ? project.tech : [];
+              const isClickable = !!project.link;
 
               return (
                 <div
                   key={project.id}
-                  className="grid-card"
-                  role="link"
-                  tabIndex={0}
-                  aria-label={`Open ${project.title}`}
-                  onClick={() => goToProject(project)}
-                  onKeyDown={(e) => onLinkKeyDown(e, project)}
+                  className={`grid-card ${isClickable ? "is-clickable" : ""}`}
+                  {...(isClickable
+                    ? {
+                        role: "link",
+                        tabIndex: 0,
+                        "aria-label": `Open ${project.title}`,
+                        onClick: () => goToProject(project),
+                        onKeyDown: (e) => onLinkKeyDown(e, project),
+                      }
+                    : {
+                        role: "group",
+                        tabIndex: -1,
+                        "aria-label": project.title,
+                      })}
                 >
                   <div className="card-image">
                     <div
@@ -542,39 +507,53 @@ export default function Work() {
 
         {viewMode === "list" && (
           <div className="space-y-8 mt-15">
-            {filteredProjects.map((project, index) => (
-              <div
-                key={project.id}
-                className="list-row flex items-center justify-between py-4 cursor-pointer hover:opacity-80 transition-opacity duration-300"
-                style={{ animationDelay: `${index * 55}ms` }}
-                onMouseEnter={() => setHoveredProject(project)}
-                onMouseLeave={() => setHoveredProject(null)}
-                onClick={() => goToProject(project)}
-                role="link"
-                tabIndex={0}
-                aria-label={`Open ${project.title}`}
-                onKeyDown={(e) => onLinkKeyDown(e, project)}
-              >
-                <h3
-                  className="maragsa-font text-[#d55555]"
-                  style={{ fontSize: "50px", fontWeight: "500" }}
+            {filteredProjects.map((project, index) => {
+              const isClickable = !!project.link;
+
+              return (
+                <div
+                  key={project.id}
+                  className={`list-row flex items-center justify-between py-4 hover:opacity-80 transition-opacity duration-300 ${
+                    isClickable ? "is-clickable" : ""
+                  }`}
+                  style={{ animationDelay: `${index * 55}ms` }}
+                  onMouseEnter={() => setHoveredProject(project)}
+                  onMouseLeave={() => setHoveredProject(null)}
+                  {...(isClickable
+                    ? {
+                        onClick: () => goToProject(project),
+                        role: "link",
+                        tabIndex: 0,
+                        "aria-label": `Open ${project.title}`,
+                        onKeyDown: (e) => onLinkKeyDown(e, project),
+                      }
+                    : {
+                        role: "group",
+                        tabIndex: -1,
+                        "aria-label": project.title,
+                      })}
                 >
-                  {project.title}
-                </h3>
+                  <h3
+                    className="maragsa-font text-[#d55555]"
+                    style={{ fontSize: "50px", fontWeight: "500" }}
+                  >
+                    {project.title}
+                  </h3>
 
-                <div className="flex-1 flex justify-center">
-                  <span className="maragsa-font text-[#d55555]" style={{ fontSize: "15px" }}>
-                    {project.category}
-                  </span>
-                </div>
+                  <div className="flex-1 flex justify-center">
+                    <span className="maragsa-font text-[#d55555]" style={{ fontSize: "15px" }}>
+                      {project.category}
+                    </span>
+                  </div>
 
-                <div className="max-w-xs text-right">
-                  <p className="text-[#d55555]" style={{ fontSize: "17px" }}>
-                    {project.description}
-                  </p>
+                  <div className="max-w-xs text-right">
+                    <p className="text-[#d55555]" style={{ fontSize: "17px" }}>
+                      {project.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

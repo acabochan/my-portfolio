@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Image from "next/image";
 import HoverWord from "@/components/HoverWord";
+import IntroSection from "@/components/IntroSection";
 
 const DiceHomepage = () => {
   const containerRef = useRef(null);
@@ -26,7 +28,6 @@ const DiceHomepage = () => {
 
   const mouseNdcRef = useRef(new THREE.Vector2(0, 0));
   const mousePosRef = useRef({ x: 0, y: 0 }); // px inside container
-
   const needsPickRef = useRef(false);
 
   const dragRef = useRef({
@@ -50,14 +51,36 @@ const DiceHomepage = () => {
   // which preview image to show (rarely changes, OK as state)
   const [hoverPreviewSrc, setHoverPreviewSrc] = useState("/about_me.gif");
 
+  // kept because your HoverWord expects it; you can use these later if desired
   const [isDevLabelHover, setIsDevLabelHover] = useState(false);
   const [isArtistLabelHover, setIsArtistLabelHover] = useState(false);
 
   const cards = useMemo(
     () => [
-      { id: "about", title: "About Me", icon: "👤", color: "#f4a261", route: "/about", preview: "/about_me.gif" },
-      { id: "code", title: "Code", icon: "</>", color: "#e76f51", route: "/work?filter=code", preview: "/code.png" },
-      { id: "art", title: "Art", icon: "✨", color: "#2a9d8f", route: "/work?filter=art", preview: "/art.gif" },
+      {
+        id: "about",
+        title: "About Me",
+        icon: "👤",
+        color: "#f4a261",
+        route: "/about",
+        preview: "/about_me.gif",
+      },
+      {
+        id: "code",
+        title: "Code",
+        icon: "</>",
+        color: "#e76f51",
+        route: "/work?filter=code",
+        preview: "/code.png",
+      },
+      {
+        id: "art",
+        title: "Art",
+        icon: "✨",
+        color: "#2a9d8f",
+        route: "/work?filter=art",
+        preview: "/art.gif",
+      },
     ],
     []
   );
@@ -632,172 +655,210 @@ const DiceHomepage = () => {
     <div
       style={{
         backgroundColor: "#f2ede7",
-        minHeight: "100vh",
+        minHeight: "40vh",
         position: "relative",
         zIndex: 0,
+        isolation: "isolate",
       }}
     >
       <Navbar />
 
-      {/* Labels */}
+      {/* HERO (dice + labels + Three.js hover cards) */}
       <div
         style={{
-          position: "absolute",
-          top: "20%",
-          left: "15%",
-          display: "flex",
-          alignItems: "baseline",
-          gap: "12px",
-          fontSize: "72px",
-          fontWeight: "normal",
-          color: "#2d2d2d",
-          fontFamily: "'Maragsa', serif",
-          zIndex: 50,
-          pointerEvents: "auto",
+          position: "relative",
+          height: "85vh",
+          width: "100%",
+          overflow: "hidden",
         }}
       >
-        <HoverWord
-          text="Developer"
-          onHoverChange={setIsDevLabelHover}
-          bubbleSide="right"
-          bubbleItems={["machine learning", "tool development", "computer graphics", "XR/VR", "creative coding", "systems"]}
+        {/* Developer label */}
+        <div
           style={{
+            position: "absolute",
+            top: "5%",
+            left: "15%",
+            display: "flex",
+            alignItems: "baseline",
+            gap: "12px",
             fontSize: "72px",
             fontWeight: "normal",
             color: "#2d2d2d",
             fontFamily: "'Maragsa', serif",
-          }}
-        />
-
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "baseline",
-            transform: "translateY(20px) translateX(-30px)",
+            zIndex: 50,
+            pointerEvents: "auto",
           }}
         >
-          <Image
-            src="/pix_cursor.png"
-            alt=""
-            width={90}
-            height={90}
-            priority
+          <HoverWord
+            text="Developer"
+            onHoverChange={setIsDevLabelHover}
+            bubbleSide="right"
+            bubbleItems={[
+              "machine learning",
+              "tool development",
+              "computer graphics",
+              "XR/VR",
+              "creative coding",
+              "systems",
+            ]}
             style={{
-              imageRendering: "pixelated",
-              userSelect: "none",
-              pointerEvents: "none",
+              fontSize: "72px",
+              fontWeight: "normal",
+              color: "#2d2d2d",
+              fontFamily: "'Maragsa', serif",
             }}
           />
-        </span>
-      </div>
 
-      {/* Artist label */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10%",
-          right: "15%",
-          display: "flex",
-          alignItems: "baseline",
-          gap: "12px",
-          fontSize: "72px",
-          fontWeight: "normal",
-          color: "#2d2d2d",
-          fontFamily: "Maragsa, serif",
-          zIndex: 50,
-          pointerEvents: "auto",
-        }}
-      >
-        <span
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "baseline",
+              transform: "translateY(20px) translateX(-30px)",
+            }}
+          >
+            <Image
+              src="/pix_cursor.png"
+              alt=""
+              width={90}
+              height={90}
+              priority
+              style={{
+                imageRendering: "pixelated",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+            />
+          </span>
+        </div>
+
+        {/* Artist label */}
+        <div
           style={{
-            display: "inline-flex",
+            position: "absolute",
+            bottom: "10%",
+            right: "15%",
+            display: "flex",
             alignItems: "baseline",
-            transform: "translateY(20px) translateX(15px)",
-          }}
-        >
-          <Image
-            src="/pix_star.png"
-            alt=""
-            width={90}
-            height={90}
-            priority
-            style={{
-              imageRendering: "pixelated",
-              userSelect: "none",
-              pointerEvents: "none",
-            }}
-          />
-        </span>
-
-        <HoverWord
-          text="Artist"
-          onHoverChange={setIsArtistLabelHover}
-          bubbleSide="left"
-          bubbleItems={["UI/UX", "book design", "product design", "printed ephemera", "risograph", "web art"]}
-          style={{
+            gap: "12px",
             fontSize: "72px",
             fontWeight: "normal",
             color: "#2d2d2d",
             fontFamily: "Maragsa, serif",
-          }}
-        />
-      </div>
-
-      {/* 3D Scene */}
-      <div
-        ref={containerRef}
-        style={{
-          width: "100%",
-          height: "75vh",
-          cursor: hoveredCardId ? "grab" : "default",
-          position: "relative",
-          zIndex: 0,
-          opacity: sceneReady ? 1 : 0,
-          transition: "opacity 0.25s ease-in",
-        }}
-      />
-
-      {/* Hover preview (always mounted; moved/animated via DOM styles for performance) */}
-      <div
-        ref={hoverElRef}
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: 320,
-          zIndex: 999,
-          pointerEvents: "none",
-          display: "none",
-          opacity: 0,
-          transform: "translate(-50%, -210px) scale(0.98)",
-          transformOrigin: "50% 90%",
-          willChange: "transform,left,top,opacity",
-          filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.18))",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            borderRadius: 16,
-            overflow: "hidden",
-            background: "rgba(255,255,255,0.0)",
+            zIndex: 50,
+            pointerEvents: "auto",
           }}
         >
-          <Image
-            src={hoverPreviewSrc}
-            alt={hoveredCard ? hoveredCard.title : "Hover preview"}
-            width={120}
-            height={120}
-            // GIFs: keep unoptimized; PNG can be optimized but leaving unoptimized is fine for hover previews
-            unoptimized
-            priority
+          <span
             style={{
-              width: "80%",
-              height: "auto",
-              display: "block",
-              userSelect: "none",
+              display: "inline-flex",
+              alignItems: "baseline",
+              transform: "translateY(20px) translateX(15px)",
+            }}
+          >
+            <Image
+              src="/pix_star.png"
+              alt=""
+              width={90}
+              height={90}
+              priority
+              style={{
+                imageRendering: "pixelated",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+            />
+          </span>
+
+          <HoverWord
+            text="Artist"
+            onHoverChange={setIsArtistLabelHover}
+            bubbleSide="left"
+            bubbleItems={[
+              "UI/UX",
+              "book design",
+              "product design",
+              "printed ephemera",
+              "risograph",
+              "web art",
+            ]}
+            style={{
+              fontSize: "72px",
+              fontWeight: "normal",
+              color: "#2d2d2d",
+              fontFamily: "Maragsa, serif",
             }}
           />
+        </div>
+
+        {/* 3D Scene (fills hero) */}
+        <div
+          ref={containerRef}
+          style={{
+            position: "absolute",
+            inset: 0,
+            cursor: hoveredCardId ? "grab" : "default",
+            zIndex: 0,
+            opacity: sceneReady ? 1 : 0,
+            transition: "opacity 0.25s ease-in",
+          }}
+        />
+
+        {/* Hover preview (Three.js hover card) */}
+        <div
+          ref={hoverElRef}
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 320,
+            zIndex: 999,
+            pointerEvents: "none",
+            display: "none",
+            opacity: 0,
+            transform: "translate(-50%, -210px) scale(0.98)",
+            transformOrigin: "50% 90%",
+            willChange: "transform,left,top,opacity",
+            filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.18))",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              borderRadius: 16,
+              overflow: "hidden",
+              background: "rgba(255,255,255,0.0)",
+            }}
+          >
+            <Image
+              src={hoverPreviewSrc}
+              alt={hoveredCard ? hoveredCard.title : "Hover preview"}
+              width={120}
+              height={120}
+              unoptimized
+              priority
+              style={{
+                width: "80%",
+                height: "auto",
+                display: "block",
+                userSelect: "none",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* BELOW THE HERO: Intro is a separate section (no overlap possible) */}
+      <div
+        style={{
+          width: "100%",
+          // padding: "64px 0 96px",
+          display: "flex",
+          justifyContent: "center",
+          backgroundColor: "#f2ede7",
+        }}
+      >
+        <div>
+          <IntroSection />
         </div>
       </div>
     </div>
