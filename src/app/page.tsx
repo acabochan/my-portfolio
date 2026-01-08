@@ -763,7 +763,7 @@ const DiceHomepage = () => {
             }}
           >
             <Image
-              src="/pix_cursor.png"
+              src="/my-portfolio/pix_cursor.png"
               alt=""
               width={90}
               height={90}
