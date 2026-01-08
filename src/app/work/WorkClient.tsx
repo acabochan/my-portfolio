@@ -111,7 +111,7 @@ export default function Work() {
     {
       id: 14,
       title: "Thanks For Resisting",
-      description: "Bags",
+      description: "Screenprinted plastic bags dispersed",
       category: "art",
       image: "/my-portfolio/images/ThankYou.jpg",
     },
@@ -129,7 +129,7 @@ export default function Work() {
       id: 16,
       title: "Illustrations",
       description: "Illustrations",
-      category: "art",
+      category: "A series of miscellaneous illustrations",
       image: "/my-portfolio/images/self_destruction.png",
     },
     {
@@ -145,7 +145,7 @@ export default function Work() {
     {
       id: 21,
       title: "Lets Play Dolls",
-      description: "App design",
+      description: "Riso printed paper doll booklet",
       category: "art",
       image: "/my-portfolio/images/dolls.jpg",
     },
