@@ -18,7 +18,7 @@ export default function Navbar() {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const handleNavClick = (section) => {
+  const handleNavClick = (section: string) => {
     setIsOpen(false);
     if (section === 'home') {
       router.push('/');
@@ -27,14 +27,14 @@ export default function Navbar() {
     }
   };
 
-  const isActive = (section) => {
+  const isActive = (section: string) => {
     if (section === 'home') {
       return pathname === '/';
     }
     return pathname === `/${section}`;
   };
 
-  const handleMouseMove = (e, buttonName) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>, buttonName: string) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -51,7 +51,7 @@ export default function Navbar() {
     }));
   };
 
-  const handleMouseLeave = (buttonName) => {
+  const handleMouseLeave = (buttonName: string) => {
     setButtonPositions(prev => ({
       ...prev,
       [buttonName]: { x: 0, y: 0 }
@@ -111,7 +111,7 @@ export default function Navbar() {
           }`}
           style={{ gap: '85px' }}
         >
-          {['work', 'about', 'resume'].map((item) => (
+          {(['work', 'about', 'resume'] as const).map((item) => (
             <li key={item} className="border-b md:border-none">
               <button 
                 onClick={() => handleNavClick(item)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, KeyboardEvent } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
 
@@ -10,7 +10,7 @@ export default function Work() {
 
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
-  const [hoveredProject, setHoveredProject] = useState(null);
+  const [hoveredProject, setHoveredProject] = useState<any>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function Work() {
   ];
 
   // Helper: navigate for internal links, open new tab for external links
-  const goToProject = (project) => {
+  const goToProject = (project: { id: number; title: string; description: string; category: string; image: string; tech: string[]; link: string; } | { id: number; title: string; description: string; category: string; image: string; link: string; tech?: undefined; }) => {
     if (!project?.link) return;
 
     const isExternal = /^https?:\/\//i.test(project.link);
@@ -38,7 +38,7 @@ export default function Work() {
     }
   };
 
-  const onLinkKeyDown = (e, project) => {
+  const onLinkKeyDown = (e: KeyboardEvent<HTMLDivElement>, project: { id: number; title: string; description: string; category: string; image: string; tech: string[]; link: string; } | { id: number; title: string; description: string; category: string; image: string; link: string; tech?: undefined; }) => {
     if (!project?.link) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -183,7 +183,7 @@ export default function Work() {
   }, [selectedFilter, projects]);
 
   useEffect(() => {
-    const handleMouseMove = (e) =>
+    const handleMouseMove = (e: { clientX: any; clientY: any; }) =>
       setMousePosition({ x: e.clientX, y: e.clientY });
     if (viewMode === "list") {
       document.addEventListener("mousemove", handleMouseMove);

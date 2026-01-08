@@ -1,16 +1,23 @@
-"use client";
 import React, { useRef, useState } from "react";
+
+type HoverWordProps = {
+  text: string;
+  onHoverChange?: (isHovering: boolean) => void;
+  style?: React.CSSProperties;
+  bubbleItems?: readonly string[];
+  bubbleSide?: "right" | "left";
+};
 
 function HoverWord({
   text,
   onHoverChange,
   style,
   bubbleItems = [],
-  bubbleSide = "right", // "right" | "left"
-}) {
-  const [hoveredIdx, setHoveredIdx] = useState(null);
+  bubbleSide = "right",
+}: HoverWordProps) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [isWordHover, setIsWordHover] = useState(false);
-  const hoverTimeoutRef = useRef(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   return (
     <div

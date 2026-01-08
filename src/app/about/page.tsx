@@ -291,87 +291,71 @@ Adobe Creative Suite (Photoshop, Illustrator, After Effects, Premiere Pro, Indes
     },
   ];
 
-  const [openSection, setOpenSection] = useState(null);
   const [mounted, setMounted] = useState(false);
   const [typedTitles, setTypedTitles] = useState(sections.map((s) => s.title));
 
-  const toggleSection = (section) =>
+  const [openSection, setOpenSection] = useState<number | null>(null);
+
+  const toggleSection = (section: number) => {
     setOpenSection(openSection === section ? null : section);
+  };
 
-  const canvasRef = useRef(null);
-  const drawing = useRef(false);
+const canvasRef = useRef<HTMLCanvasElement | null>(null);
+const drawing = useRef(false);
 
-  useEffect(() => setMounted(true), []);
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
 
-  // Typing animation
-  useEffect(() => {
-    if (!mounted) return;
-    setTypedTitles(Array(sections.length).fill(""));
-    let charIndex = 0;
-    const maxLength = Math.max(...sections.map((s) => s.title.length));
-    const interval = setInterval(() => {
-      setTypedTitles((prev) =>
-        prev.map((_, i) => sections[i].title.slice(0, charIndex + 1))
-      );
-      charIndex++;
-      if (charIndex >= maxLength) clearInterval(interval);
-    }, 70);
-    return () => clearInterval(interval);
-  }, [mounted]);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
 
-  // Canvas drawing
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+  const gridSize = 20;
 
-    const gridSize = 20; // size of each "pixel"
+  const draw = (e: MouseEvent) => {
+    if (!drawing.current) return;
 
-    const startDrawing = (e) => {
-      drawing.current = true;
-      draw(e);
-    };
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    const endDrawing = () => {
-      drawing.current = false;
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // clear on mouse up
-    };
+    const x = Math.floor(mouseX / gridSize) * gridSize;
+    const y = Math.floor(mouseY / gridSize) * gridSize;
 
-    const draw = (e) => {
-      if (!drawing.current) return;
+    ctx.fillStyle = "#d55555";
+    ctx.fillRect(x, y, gridSize, gridSize);
+  };
 
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+  const startDrawing = (e: MouseEvent) => {
+    drawing.current = true;
+    draw(e);
+  };
 
-      // Snap to nearest grid cell
-      const x = Math.floor(mouseX / gridSize) * gridSize;
-      const y = Math.floor(mouseY / gridSize) * gridSize;
+  const endDrawing = () => {
+    drawing.current = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
 
-      ctx.fillStyle = "#d55555";
-      ctx.fillRect(x, y, gridSize, gridSize);
-    };
+  canvas.addEventListener("mousedown", startDrawing);
+  canvas.addEventListener("mouseup", endDrawing);
+  canvas.addEventListener("mouseleave", endDrawing);
+  canvas.addEventListener("mousemove", draw);
 
-    canvas.addEventListener("mousedown", startDrawing);
-    canvas.addEventListener("mouseup", endDrawing);
-    canvas.addEventListener("mouseleave", endDrawing);
-    canvas.addEventListener("mousemove", draw);
+  const resize = () => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  };
+  resize();
+  window.addEventListener("resize", resize);
 
-    // Resize canvas to match container
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    return () => {
-      canvas.removeEventListener("mousedown", startDrawing);
-      canvas.removeEventListener("mouseup", endDrawing);
-      canvas.removeEventListener("mouseleave", endDrawing);
-      canvas.removeEventListener("mousemove", draw);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
+  return () => {
+    canvas.removeEventListener("mousedown", startDrawing);
+    canvas.removeEventListener("mouseup", endDrawing);
+    canvas.removeEventListener("mouseleave", endDrawing);
+    canvas.removeEventListener("mousemove", draw);
+    window.removeEventListener("resize", resize);
+  };
+}, []);
 
   return (
     <div
@@ -433,6 +417,7 @@ Adobe Creative Suite (Photoshop, Illustrator, After Effects, Premiere Pro, Indes
                   >
                     <HoverWord
                       text={typedTitles[index]}
+                      onHoverChange={() => {}}
                       style={{
                         color: "#d55555",
                         fontSize: "2.25rem",

@@ -8,39 +8,63 @@ import Image from "next/image";
 import HoverWord from "@/components/HoverWord";
 import IntroSection from "@/components/IntroSection";
 
+type Card = {
+  id: "about" | "code" | "art";
+  title: string;
+  icon: string;
+  color: string;
+  route: string;
+  preview: string;
+};
+
+type DragState = {
+  active: boolean;
+  object: THREE.Object3D | null;
+  prevMouse: { x: number; y: number };
+};
+
+type HoverAnimState = {
+  visible: boolean;
+  currentId: Card["id"] | null;
+  enterStart: number;
+  exitStart: number;
+  exiting: boolean;
+};
+
 const DiceHomepage = () => {
-  const containerRef = useRef(null);
   const router = useRouter();
 
-  const [hoveredCardId, setHoveredCardId] = useState(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [hoveredCardId, setHoveredCardId] = useState<Card["id"] | null>(null);
   const [sceneReady, setSceneReady] = useState(false);
 
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const rendererRef = useRef(null);
-  const diceGroupsRef = useRef([]);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const diceGroupsRef = useRef<THREE.Group[]>([]);
 
-  // ---- PERF: keep fast-moving values in refs (no re-render on mousemove)
-  const hoveredCardIdRef = useRef(null);
+  // PERF: keep fast-moving values in refs (no re-render on mousemove)
+  const hoveredCardIdRef = useRef<Card["id"] | null>(null);
   useEffect(() => {
     hoveredCardIdRef.current = hoveredCardId;
   }, [hoveredCardId]);
 
   const mouseNdcRef = useRef(new THREE.Vector2(0, 0));
-  const mousePosRef = useRef({ x: 0, y: 0 }); // px inside container
+  const mousePosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 }); // px inside container
   const needsPickRef = useRef(false);
 
-  const dragRef = useRef({
+  const dragRef = useRef<DragState>({
     active: false,
     object: null,
     prevMouse: { x: 0, y: 0 },
   });
 
   // Hover preview DOM element (moved by style, not state)
-  const hoverElRef = useRef(null);
+  const hoverElRef = useRef<HTMLDivElement | null>(null);
 
   // Hover animation state (stored in ref, applied in animate loop)
-  const hoverAnimRef = useRef({
+  const hoverAnimRef = useRef<HoverAnimState>({
     visible: false,
     currentId: null,
     enterStart: 0,
@@ -49,13 +73,13 @@ const DiceHomepage = () => {
   });
 
   // which preview image to show (rarely changes, OK as state)
-  const [hoverPreviewSrc, setHoverPreviewSrc] = useState("/about_me.gif");
+  const [hoverPreviewSrc, setHoverPreviewSrc] = useState<string>("/about_me.gif");
 
   // kept because your HoverWord expects it; you can use these later if desired
   const [isDevLabelHover, setIsDevLabelHover] = useState(false);
   const [isArtistLabelHover, setIsArtistLabelHover] = useState(false);
 
-  const cards = useMemo(
+  const cards: Card[] = useMemo(
     () => [
       {
         id: "about",
@@ -86,32 +110,42 @@ const DiceHomepage = () => {
   );
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const initTimeout = setTimeout(() => {
-      initScene();
+    let cleanupFn: (() => void) | null = null;
+
+    const initTimeout = window.setTimeout(() => {
+      cleanupFn = initScene();
     }, 50);
 
-    function initScene() {
-      if (!containerRef.current) return;
+    const initScene = (): (() => void) | null => {
+      const containerNow = containerRef.current;
+      if (!containerNow) return null;
 
+      // --- Scene
       const scene = new THREE.Scene();
       scene.background = new THREE.Color("#f2ede7");
       sceneRef.current = scene;
 
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
+      const width = containerNow.clientWidth;
+      const height = containerNow.clientHeight;
+
       if (width === 0 || height === 0) {
-        setTimeout(initScene, 80);
-        return;
+        // try again a bit later if container hasn't laid out yet
+        const retry = window.setTimeout(() => {
+          cleanupFn = initScene();
+        }, 80);
+        return () => window.clearTimeout(retry);
       }
 
+      // --- Camera
       const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 1000);
       camera.position.set(0, 2.9, 9.2);
       camera.lookAt(0, 0, 0);
       cameraRef.current = camera;
 
-      // PERF: antialias off (dither style hides it) + capped pixel ratio
+      // --- Renderer
       const renderer = new THREE.WebGLRenderer({
         antialias: false,
         alpha: true,
@@ -121,12 +155,13 @@ const DiceHomepage = () => {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.shadowMap.enabled = false;
 
-      while (containerRef.current.firstChild) {
-        containerRef.current.removeChild(containerRef.current.firstChild);
+      while (containerNow.firstChild) {
+        containerNow.removeChild(containerNow.firstChild);
       }
-      containerRef.current.appendChild(renderer.domElement);
+      containerNow.appendChild(renderer.domElement);
       rendererRef.current = renderer;
 
+      // --- Lights
       scene.add(new THREE.AmbientLight(0xffd4a3, 0.7));
       const directionalLight = new THREE.DirectionalLight(0xd55555, 1.2);
       directionalLight.position.set(5, 8, 5);
@@ -136,6 +171,7 @@ const DiceHomepage = () => {
       accentLight.position.set(-3, 3, -3);
       scene.add(accentLight);
 
+      // --- Shaders
       const ditherGLSL = `
         float dither4x4(vec2 position, float brightness) {
           float x = mod(position.x, 4.0);
@@ -209,7 +245,7 @@ const DiceHomepage = () => {
           fragmentShader: diceFragmentShader,
         });
 
-      const makeDitheredTextureMaterial = (texture) => {
+      const makeDitheredTextureMaterial = (texture: THREE.Texture) => {
         texture.magFilter = THREE.NearestFilter;
         texture.minFilter = THREE.NearestFilter;
         texture.needsUpdate = true;
@@ -243,7 +279,13 @@ const DiceHomepage = () => {
         });
       };
 
-      function createRoundedBoxGeometry(width, height, depth, radius, smoothness) {
+      function createRoundedBoxGeometry(
+        width: number,
+        height: number,
+        depth: number,
+        radius: number,
+        smoothness: number
+      ) {
         const shape = new THREE.Shape();
         const eps = 0.00001;
 
@@ -266,9 +308,9 @@ const DiceHomepage = () => {
         return geometry;
       }
 
-      function drawDiceDots(ctx, number, color) {
+      function drawDiceDots(ctx: CanvasRenderingContext2D, number: number, color: string) {
         const dotRadius = 32;
-        const positions = {
+        const positions: Record<number, [number, number][]> = {
           1: [[128, 128]],
           2: [
             [70, 70],
@@ -310,7 +352,7 @@ const DiceHomepage = () => {
         });
       }
 
-      function addDiceDots(diceMesh) {
+      function addDiceDots(diceMesh: THREE.Object3D) {
         const allFaces = [
           { number: 1, face: "front", color: "#d55555" },
           { number: 6, face: "back", color: "#2d2d2d" },
@@ -318,19 +360,19 @@ const DiceHomepage = () => {
           { number: 4, face: "right", color: "#2d2d2d" },
           { number: 2, face: "top", color: "#d55555" },
           { number: 5, face: "bottom", color: "#2d2d2d" },
-        ];
+        ] as const;
 
         allFaces.forEach((faceConfig) => {
-          const canvas = document.createElement("canvas");
-          canvas.width = 256;
-          canvas.height = 256;
-          const ctx = canvas.getContext("2d");
+          const c = document.createElement("canvas");
+          c.width = 256;
+          c.height = 256;
+          const ctx = c.getContext("2d");
           if (!ctx) return;
 
           ctx.clearRect(0, 0, 256, 256);
           drawDiceDots(ctx, faceConfig.number, faceConfig.color);
 
-          const texture = new THREE.CanvasTexture(canvas);
+          const texture = new THREE.CanvasTexture(c);
           const faceGeometry = new THREE.PlaneGeometry(1.3, 1.3);
           const faceMaterial = makeDitheredTextureMaterial(texture);
           const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
@@ -357,6 +399,7 @@ const DiceHomepage = () => {
         });
       }
 
+      // --- Dice
       diceGroupsRef.current = [];
       const BASE_DICE_SCALE = 0.05;
 
@@ -369,7 +412,7 @@ const DiceHomepage = () => {
       d6Group.position.set(2.15, -0.75, -0.2);
       d6Group.rotation.set(-0.35, 0.55, 0.0);
       d6Group.scale.setScalar(0.02);
-      d6Group.userData = { cardId: "code", baseRot: d6Group.rotation.clone() };
+      d6Group.userData = { cardId: "code" as const, baseRot: d6Group.rotation.clone() };
       scene.add(d6Group);
       diceGroupsRef.current.push(d6Group);
 
@@ -381,7 +424,7 @@ const DiceHomepage = () => {
       d20Group.position.set(-2.15, -0.9, -0.15);
       d20Group.rotation.set(0.15, 0.35, 0.0);
       d20Group.scale.setScalar(BASE_DICE_SCALE);
-      d20Group.userData = { cardId: "art", baseRot: d20Group.rotation.clone() };
+      d20Group.userData = { cardId: "art" as const, baseRot: d20Group.rotation.clone() };
       scene.add(d20Group);
       diceGroupsRef.current.push(d20Group);
 
@@ -393,14 +436,15 @@ const DiceHomepage = () => {
       d4Group.position.set(-0.5, 1.15, 0.5);
       d4Group.rotation.set(2.25, -2.0, 2.25);
       d4Group.scale.setScalar(BASE_DICE_SCALE);
-      d4Group.userData = { cardId: "about", baseRot: d4Group.rotation.clone() };
+      d4Group.userData = { cardId: "about" as const, baseRot: d4Group.rotation.clone() };
       scene.add(d4Group);
       diceGroupsRef.current.push(d4Group);
 
+      // --- Picking
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
 
-      const setMouseFromEvent = (event) => {
+      const setMouseFromEvent = (event: MouseEvent) => {
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
 
@@ -417,16 +461,16 @@ const DiceHomepage = () => {
         raycaster.setFromCamera(mouse, camera);
       };
 
-      const pickDiceGroup = () => {
+      const pickDiceGroup = (): THREE.Object3D | null => {
         const hits = raycaster.intersectObjects(diceGroupsRef.current, true);
         if (!hits.length) return null;
 
-        let obj = hits[0].object;
-        while (obj && !obj.userData?.cardId && obj.parent) obj = obj.parent;
-        return obj?.userData?.cardId ? obj : null;
+        let obj: THREE.Object3D | null = hits[0].object;
+        while (obj && !(obj.userData as any)?.cardId && obj.parent) obj = obj.parent;
+        return (obj && (obj.userData as any)?.cardId) ? obj : null;
       };
 
-      const onMouseMove = (event) => {
+      const onMouseMove = (event: MouseEvent) => {
         setMouseFromEvent(event);
 
         if (dragRef.current.active && dragRef.current.object) {
@@ -435,7 +479,7 @@ const DiceHomepage = () => {
 
           dragRef.current.object.rotation.y += dx * 0.01;
           dragRef.current.object.rotation.x += dy * 0.01;
-          dragRef.current.object.userData.baseRot = dragRef.current.object.rotation.clone();
+          (dragRef.current.object.userData as any).baseRot = dragRef.current.object.rotation.clone();
           dragRef.current.prevMouse = { x: event.clientX, y: event.clientY };
           return;
         }
@@ -443,7 +487,7 @@ const DiceHomepage = () => {
         needsPickRef.current = true;
       };
 
-      const onMouseDown = (event) => {
+      const onMouseDown = (event: MouseEvent) => {
         setMouseFromEvent(event);
         const g = pickDiceGroup();
         if (!g) return;
@@ -467,29 +511,28 @@ const DiceHomepage = () => {
         if (card) router.push(card.route);
       };
 
-      const onContextMenu = (e) => e.preventDefault();
+      const onContextMenu = (e: MouseEvent) => e.preventDefault();
 
-      const container = containerRef.current;
-      if (container) {
-        container.addEventListener("mousemove", onMouseMove);
-        container.addEventListener("mousedown", onMouseDown);
-        container.addEventListener("click", onClick);
-        container.addEventListener("contextmenu", onContextMenu);
-      }
+      containerNow.addEventListener("mousemove", onMouseMove);
+      containerNow.addEventListener("mousedown", onMouseDown);
+      containerNow.addEventListener("click", onClick);
+      containerNow.addEventListener("contextmenu", onContextMenu);
       window.addEventListener("mouseup", onMouseUp);
 
-      const clamp01 = (v) => Math.max(0, Math.min(1, v));
-      const easeOutBack = (t) => {
+      // --- Hover preview / animation loop
+      const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+      const easeOutBack = (t: number) => {
         const c1 = 1.70158;
         const c3 = c1 + 1;
         return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
       };
-      const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+      const easeInOutQuad = (t: number) =>
+        t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
       const ENTER_MS = 220;
       const EXIT_MS = 140;
 
-      let animationId;
+      let animationId: number | null = null;
       let isAnimating = true;
 
       const HOVER_SCALE = 1.05;
@@ -499,7 +542,7 @@ const DiceHomepage = () => {
 
       const animate = () => {
         if (!isAnimating) return;
-        animationId = requestAnimationFrame(animate);
+        animationId = window.requestAnimationFrame(animate);
 
         const now = performance.now();
 
@@ -507,7 +550,7 @@ const DiceHomepage = () => {
           needsPickRef.current = false;
 
           const g = pickDiceGroup();
-          const nextId = g ? g.userData.cardId : null;
+          const nextId = g ? ((g.userData as any).cardId as Card["id"]) : null;
 
           if (nextId !== hoveredCardIdRef.current) {
             const anim = hoverAnimRef.current;
@@ -518,7 +561,6 @@ const DiceHomepage = () => {
               anim.enterStart = now;
               anim.exiting = false;
 
-              // update preview src (only on hover change)
               const nextCard = cards.find((c) => c.id === nextId);
               setHoverPreviewSrc(nextCard?.preview || "/about_me.gif");
             } else if (anim.visible) {
@@ -534,14 +576,17 @@ const DiceHomepage = () => {
         const mouseNdc = mouseNdcRef.current;
 
         for (const g of diceGroupsRef.current) {
-          const isHover = hoveredId && g.userData.cardId === hoveredId && !dragRef.current.active;
+          const gId = (g.userData as any).cardId as Card["id"];
+          const isHover = hoveredId && gId === hoveredId && !dragRef.current.active;
 
           const targetScale = isHover ? HOVER_SCALE : 1.0;
           g.scale.x += (targetScale - g.scale.x) * 0.12;
           g.scale.y += (targetScale - g.scale.y) * 0.12;
           g.scale.z += (targetScale - g.scale.z) * 0.12;
 
-          const base = g.userData.baseRot || new THREE.Euler();
+          const base: THREE.Euler =
+            ((g.userData as any).baseRot as THREE.Euler) || new THREE.Euler();
+
           const targetRotX = base.x + -mouseNdc.y * ROT_FOLLOW_STRENGTH_X;
           const targetRotY = base.y + mouseNdc.x * ROT_FOLLOW_STRENGTH_Y;
 
@@ -585,7 +630,6 @@ const DiceHomepage = () => {
           const { x, y } = mousePosRef.current;
           hoverEl.style.left = `${x}px`;
           hoverEl.style.top = `${y}px`;
-
           hoverEl.style.opacity = `${opacity}`;
           hoverEl.style.transform = `translate(-50%, -210px) scale(${scale}) rotate(${wobble}deg) rotateX(${tilt}deg)`;
           hoverEl.style.display = show ? "block" : "none";
@@ -597,41 +641,45 @@ const DiceHomepage = () => {
       animate();
 
       const handleResize = () => {
-        if (!containerRef.current || !camera || !renderer) return;
-        camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+        const c = containerRef.current;
+        if (!c) return;
+        if (c.clientWidth === 0 || c.clientHeight === 0) return;
+
+        camera.aspect = c.clientWidth / c.clientHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+        renderer.setSize(c.clientWidth, c.clientHeight);
       };
       window.addEventListener("resize", handleResize);
 
       setSceneReady(true);
 
+      // --- cleanup
       return () => {
         isAnimating = false;
         window.removeEventListener("resize", handleResize);
         window.removeEventListener("mouseup", onMouseUp);
 
-        if (container) {
-          container.removeEventListener("mousemove", onMouseMove);
-          container.removeEventListener("mousedown", onMouseDown);
-          container.removeEventListener("click", onClick);
-          container.removeEventListener("contextmenu", onContextMenu);
-        }
+        containerNow.removeEventListener("mousemove", onMouseMove);
+        containerNow.removeEventListener("mousedown", onMouseDown);
+        containerNow.removeEventListener("click", onClick);
+        containerNow.removeEventListener("contextmenu", onContextMenu);
 
-        if (animationId) cancelAnimationFrame(animationId);
+        if (animationId) window.cancelAnimationFrame(animationId);
 
-        d6Geo?.dispose();
-        d20Geo?.dispose();
-        d4Geo?.dispose();
-        d6Mat?.dispose();
-        d20Mat?.dispose();
-        d4Mat?.dispose();
+        d6Geo.dispose();
+        d20Geo.dispose();
+        d4Geo.dispose();
+        d6Mat.dispose();
+        d20Mat.dispose();
+        d4Mat.dispose();
 
-        renderer?.dispose();
-        if (containerRef.current && renderer?.domElement) {
+        renderer.dispose();
+        if (containerRef.current && renderer.domElement) {
           try {
             containerRef.current.removeChild(renderer.domElement);
-          } catch (e) {}
+          } catch {
+            // ignore
+          }
         }
 
         sceneRef.current = null;
@@ -639,13 +687,11 @@ const DiceHomepage = () => {
         rendererRef.current = null;
         diceGroupsRef.current = [];
       };
-    }
-
-    const cleanup = initScene();
+    };
 
     return () => {
-      clearTimeout(initTimeout);
-      if (cleanup) cleanup();
+      window.clearTimeout(initTimeout);
+      if (cleanupFn) cleanupFn();
     };
   }, [cards, router]);
 
@@ -700,7 +746,7 @@ const DiceHomepage = () => {
               "XR/VR",
               "creative coding",
               "systems",
-            ]}
+            ] as const}
             style={{
               fontSize: "72px",
               fontWeight: "normal",
@@ -773,14 +819,7 @@ const DiceHomepage = () => {
             text="Artist"
             onHoverChange={setIsArtistLabelHover}
             bubbleSide="left"
-            bubbleItems={[
-              "UI/UX",
-              "book design",
-              "product design",
-              "printed ephemera",
-              "risograph",
-              "web art",
-            ]}
+            bubbleItems={["UI/UX", "book design", "product design", "printed ephemera", "risograph", "web art"] as const}
             style={{
               fontSize: "72px",
               fontWeight: "normal",
@@ -847,11 +886,10 @@ const DiceHomepage = () => {
         </div>
       </div>
 
-      {/* BELOW THE HERO: Intro is a separate section (no overlap possible) */}
+      {/* BELOW THE HERO */}
       <div
         style={{
           width: "100%",
-          // padding: "64px 0 96px",
           display: "flex",
           justifyContent: "center",
           backgroundColor: "#f2ede7",

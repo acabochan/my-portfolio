@@ -6,8 +6,8 @@ const IntroSection = () => {
   const [mode, setMode] = useState("developer"); // 'developer' | 'artist'
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const sectionRef = useRef(null);
-  const floatRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const floatRef = useRef<HTMLDivElement>(null);
 
   const images = useMemo(
     () => [
@@ -34,7 +34,7 @@ const IntroSection = () => {
     let lastX = 0;
     let pendingX = 0;
 
-    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
     const updateFloat = () => {
       rafId = 0;
@@ -52,7 +52,7 @@ const IntroSection = () => {
       floater.style.transform = `translate(${x}px, ${Math.max(0, lockedY)}px)`;
     };
 
-    const onMove = (e) => {
+    const onMove = (e: { clientX: number; movementX: number; }) => {
       const rect = el.getBoundingClientRect();
       const x = e.clientX - rect.left;
 
