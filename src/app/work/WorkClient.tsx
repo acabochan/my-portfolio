@@ -65,6 +65,16 @@ export default function Work() {
       image: "/my-portfolio/images/cover.png",
     },
     {
+      id: 22,
+      title: "PIE Dev",
+      description:
+        "Gameplay development and programming for PIE Dev, an indie game studio.",
+      category: "code",
+      image: "/my-portfolio/pie-dev.png",
+      tech: ["Game Development", "Gameplay Programming"],
+      link: "/work/pie-dev",
+    },
+    {
       id: 2,
       title: "AngioPilot",
       description:
