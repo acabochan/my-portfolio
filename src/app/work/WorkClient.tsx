@@ -89,7 +89,8 @@ export default function Work() {
       title: "Manananggal",
       description: "A zine.",
       category: "art",
-      image: "/my-portfolio/images/mananangal.jpg",
+      image: "/my-portfolio/images/Andrea_Cover.jpeg",
+      link: "/work/manananggal",
     },
     {
       id: 3,
@@ -106,7 +107,8 @@ export default function Work() {
       title: "Sigarilyo",
       description: "A zine.",
       category: "art",
-      image: "/my-portfolio/images/sigarilyo.jpg",
+      image: "/my-portfolio/images/sigarilyo.gif",
+      link: "/work/sigarilyo",
     },
     {
       id: 4,
@@ -139,7 +141,7 @@ export default function Work() {
       id: 16,
       title: "Illustrations",
       description: "Illustrations",
-      category: "A series of miscellaneous illustrations",
+      category: "art",
       image: "/my-portfolio/images/self_destruction.png",
     },
     {
@@ -157,7 +159,7 @@ export default function Work() {
       title: "Lets Play Dolls",
       description: "Riso printed paper doll booklet",
       category: "art",
-      image: "/my-portfolio/images/dolls.jpg",
+      image: "/my-portfolio/images/dolls_thumbnail.gif",
     },
     {
       id: 7,
