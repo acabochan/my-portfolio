@@ -150,6 +150,7 @@ export default function Work() {
       description: "Illustrations",
       category: "art",
       image: "/my-portfolio/images/self_destruction.png",
+      link: "/work/illustrations",
     },
     {
       id: 6,
@@ -180,10 +181,11 @@ export default function Work() {
     },
     {
       id: 17,
-      title: "Root",
-      description: "App design",
+      title: "Rooted",
+      description: "First-place winner at the Tufts Producthon—a platform connecting people with local volunteer opportunities.",
       category: "art",
       image: "/my-portfolio/images/root.png",
+      link: "/work/rooted",
     },
     {
       id: 18,
