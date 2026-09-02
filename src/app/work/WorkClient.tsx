@@ -111,6 +111,13 @@ export default function Work() {
       link: "/work/sigarilyo",
     },
     {
+      id: 23,
+      title: "Peach Mango Pie",
+      description: "A riso printed book with a screen printed container.",
+      category: "art",
+      image: "/my-portfolio/images/peach_mango_pie.gif",
+    },
+    {
       id: 4,
       title: "LGBTQ+ Senior Housing Web App",
       description:
