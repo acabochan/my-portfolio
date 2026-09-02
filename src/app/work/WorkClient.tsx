@@ -112,7 +112,7 @@ export default function Work() {
     },
     {
       id: 23,
-      title: "Peach Mango Pie",
+      title: "What Are Your Thoughts on Jollibee?",
       description: "A riso printed book with a screen printed container.",
       category: "art",
       image: "/my-portfolio/images/peach_mango_pie.gif",
