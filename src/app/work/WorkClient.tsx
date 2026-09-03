@@ -153,6 +153,14 @@ export default function Work() {
       link: "/work/illustrations",
     },
     {
+      id: 24,
+      title: "Print Experiments",
+      description: "Print experiments",
+      category: "art",
+      image: "/my-portfolio/images/print_4.png",
+      link: "/work/print-experiments",
+    },
+    {
       id: 6,
       title: "Trial & Error",
       description:
@@ -168,6 +176,7 @@ export default function Work() {
       description: "Riso printed paper doll booklet",
       category: "art",
       image: "/my-portfolio/images/dolls_thumbnail.gif",
+      link: "/work/dolls",
     },
     {
       id: 7,
