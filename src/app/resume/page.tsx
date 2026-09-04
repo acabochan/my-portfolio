@@ -6,7 +6,7 @@ export default function ResumePage() {
   return (
     <div
       className="min-h-screen w-full"
-      style={{ backgroundColor: "#f7f6f3" }} // off-white
+      style={{ backgroundColor: "#f2ede7" }}
     >
       <Navbar />
 

@@ -57,7 +57,7 @@ export default function PrintExperimentsPage() {
   }, [selectedIndex]);
 
   return (
-    <div className="min-h-screen bg-white text-[#04081c]">
+    <div className="min-h-screen bg-[#f2ede7] text-[#04081c]">
       <Navbar />
 
       <main className="mx-auto max-w-6xl px-6 pb-20 pt-8 md:px-12">

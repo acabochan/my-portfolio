@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, KeyboardEvent } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/navbar";
+import HoverWord from "@/components/HoverWord";
 
 export default function Work() {
   const searchParams = useSearchParams();
@@ -243,20 +244,60 @@ export default function Work() {
 
         /* List pop-in */
         @keyframes listPopIn {
+          0% {
+            opacity: 0;
+            transform: translateX(-36px) skewX(-3deg);
+          }
+          65% {
+            opacity: 1;
+            transform: translateX(7px) skewX(1deg);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) skewX(0);
+          }
+        }
+
+        @keyframes previewPopIn {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: scale(0.82) rotate(-5deg);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1) rotate(2deg);
+          }
+        }
+
+        @keyframes gridCardPopIn {
+          0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.82) rotate(var(--entry-rotation));
+            filter: blur(5px);
+          }
+          58% {
+            opacity: 1;
+            transform: translateY(-7px) scale(1.035) rotate(0deg);
+            filter: blur(0);
+          }
+          78% {
+            transform: translateY(3px) scale(0.985);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1) rotate(0deg);
+            filter: blur(0);
           }
         }
 
         .list-row {
           opacity: 0;
-          transform: translateY(10px);
-          animation: listPopIn 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+          transform: translateX(-36px);
+          animation: listPopIn 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .list-preview {
+          animation: previewPopIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
         }
 
         /* Respect reduced motion */
@@ -265,6 +306,18 @@ export default function Work() {
             animation: none;
             opacity: 1;
             transform: none;
+          }
+
+          .list-preview {
+            animation: none;
+            transition: none;
+          }
+
+          .grid-card {
+            animation: none !important;
+            opacity: 1;
+            transform: none;
+            filter: none;
           }
         }
 
@@ -326,6 +379,7 @@ export default function Work() {
         }
 
         .grid-card {
+          --entry-rotation: -2deg;
           position: relative;
           transition: all 0.3s ease;
           overflow: hidden;
@@ -336,6 +390,9 @@ export default function Work() {
           background: transparent;
           cursor: default; /* default unless clickable */
           outline: none;
+          opacity: 1;
+          animation: gridCardPopIn 650ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+          will-change: transform, opacity, filter;
         }
 
         .grid-card.is-clickable {
@@ -470,15 +527,21 @@ export default function Work() {
 
         {viewMode === "grid" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-15">
-            {filteredProjects.map((project) => {
+            {filteredProjects.map((project, index) => {
               const isArt = project.category === "art";
               const tech = Array.isArray(project.tech) ? project.tech : [];
               const isClickable = !!project.link;
 
               return (
                 <div
-                  key={project.id}
+                  key={`${selectedFilter}-${project.id}`}
                   className={`grid-card ${isClickable ? "is-clickable" : ""}`}
+                  style={
+                    {
+                      animationDelay: `${Math.min(index, 8) * 55}ms`,
+                      "--entry-rotation": `${index % 2 === 0 ? -2.5 : 2.5}deg`,
+                    } as React.CSSProperties
+                  }
                   {...(isClickable
                     ? {
                         role: "link",
@@ -542,8 +605,8 @@ export default function Work() {
 
               return (
                 <div
-                  key={project.id}
-                  className={`list-row flex items-center justify-between py-4 hover:opacity-80 transition-opacity duration-300 ${
+                  key={`${selectedFilter}-${project.id}`}
+                  className={`list-row flex items-center justify-between py-4 ${
                     isClickable ? "is-clickable" : ""
                   }`}
                   style={{ animationDelay: `${index * 55}ms` }}
@@ -563,11 +626,11 @@ export default function Work() {
                         "aria-label": project.title,
                       })}
                 >
-                  <h3
-                    className="maragsa-font text-[#d55555]"
-                    style={{ fontSize: "50px", fontWeight: "500" }}
-                  >
-                    {project.title}
+                  <h3 className="maragsa-font text-[#d55555]">
+                    <HoverWord
+                      text={project.title}
+                      style={{ fontSize: "50px", fontWeight: "500" }}
+                    />
                   </h3>
 
                   <div className="flex-1 flex justify-center">
@@ -595,7 +658,7 @@ export default function Work() {
               top: `${mousePosition.y - 80}px`,
             }}
           >
-            <div className="w-100 h-65 bg-gray-300 rounded-lg shadow-xl overflow-hidden">
+            <div className="list-preview w-100 h-65 bg-gray-300 rounded-lg shadow-xl overflow-hidden">
               <div
                 className="w-full h-full"
                 style={{

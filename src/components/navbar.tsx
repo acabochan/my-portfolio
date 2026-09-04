@@ -106,7 +106,7 @@ export default function Navbar() {
         </div>
 
         <ul
-          className={`absolute md:relative top-full md:top-auto left-0 md:left-auto w-full md:w-auto bg-white md:bg-transparent shadow-lg md:shadow-none md:flex items-center text-gray-700 font-medium transition-all duration-300 ${
+          className={`absolute md:relative top-full md:top-auto left-0 md:left-auto w-full md:w-auto bg-[#f2ede7] md:bg-transparent shadow-lg md:shadow-none md:flex items-center text-gray-700 font-medium transition-all duration-300 ${
             isOpen ? "block opacity-100 translate-y-0" : "hidden md:block opacity-100"
           }`}
           style={{ gap: '85px' }}

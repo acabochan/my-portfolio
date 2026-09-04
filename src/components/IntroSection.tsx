@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import HoverWord from "@/components/HoverWord";
 
 const IntroSection = () => {
   const [mode, setMode] = useState("developer"); // 'developer' | 'artist'
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [, setCurrentImageIndex] = useState(0);
 
   const sectionRef = useRef<HTMLElement>(null);
   const floatRef = useRef<HTMLDivElement>(null);
@@ -149,49 +150,25 @@ const IntroSection = () => {
         }
       `}</style>
 
-      {/* Image (moves only left/right) */}
-      <div
-        ref={floatRef}
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: 300,
-          height: 300,
-          pointerEvents: "none",
-          zIndex: 1,
-          willChange: "transform",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundImage: `url(${images[currentImageIndex]})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            border: "none",
-            borderRadius: 0,
-            boxShadow: "0 18px 40px rgba(0,0,0,0.14)",
-          }}
-        />
-      </div>
-
       {/* Content */}
       <div style={{ position: "relative", zIndex: 10, maxWidth: 760 }}>
         <div style={{ marginBottom: 18 }}>
           <h1
             style={{
-              fontSize: 44,
-              fontWeight: "normal",
-              color: "#d55555",
-              fontFamily: "'Maragsa', serif",
               margin: 0,
               marginBottom: 12,
               lineHeight: 1.05,
             }}
           >
-            Hi, I&apos;m Andrea.
+            <HoverWord
+              text="Hi, I'm Andrea."
+              style={{
+                fontSize: 44,
+                fontWeight: "normal",
+                color: "#d55555",
+                fontFamily: "'Maragsa', serif",
+              }}
+            />
           </h1>
           <p
             style={{
@@ -216,7 +193,6 @@ const IntroSection = () => {
               padding: "12px 24px",
               fontSize: "15.2px",
               fontWeight: "500",
-              fontFamily: "'Maragsa', serif",
               background: mode === "developer" ? "#d55555" : "transparent",
               color: mode === "developer" ? "#f2ede7" : "#d55555",
               border: "2px solid #d55555",
@@ -236,7 +212,6 @@ const IntroSection = () => {
               padding: "12px 24px",
               fontSize: "15.2px",
               fontWeight: "500",
-              fontFamily: "'Maragsa', serif",
               background: mode === "artist" ? "#d55555" : "transparent",
               color: mode === "artist" ? "#f2ede7" : "#d55555",
               border: "2px solid #d55555",
@@ -252,7 +227,7 @@ const IntroSection = () => {
 
         <div
           style={{
-            background: "rgba(255, 255, 255, 0.45)",
+            background: "transparent",
             borderRadius: 16,
             padding: "16px 18px",
             border: "none",
@@ -284,7 +259,7 @@ const IntroSection = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "rgba(255, 255, 255, 0.45)",
+              background: "transparent",
               borderRadius: "50%",
               transition: "all 0.2s ease",
               textDecoration: "none",
@@ -310,7 +285,7 @@ const IntroSection = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "rgba(255, 255, 255, 0.45)",
+              background: "transparent",
               borderRadius: "50%",
               transition: "all 0.2s ease",
               textDecoration: "none",
@@ -338,7 +313,7 @@ const IntroSection = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "rgba(255, 255, 255, 0.45)",
+              background: "transparent",
               borderRadius: "50%",
               transition: "all 0.2s ease",
               textDecoration: "none",
@@ -364,7 +339,7 @@ const IntroSection = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "rgba(255, 255, 255, 0.45)",
+              background: "transparent",
               borderRadius: "50%",
               transition: "all 0.2s ease",
               textDecoration: "none",

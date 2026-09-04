@@ -842,7 +842,7 @@ const DiceHomepage = () => {
           }}
         />
 
-        {/* Hover preview (Three.js hover card) */}
+        {/* Hover preview for the dice */}
         <div
           ref={hoverElRef}
           style={{
@@ -860,14 +860,7 @@ const DiceHomepage = () => {
             filter: "drop-shadow(0 18px 40px rgba(0,0,0,0.18))",
           }}
         >
-          <div
-            style={{
-              width: "100%",
-              borderRadius: 16,
-              overflow: "hidden",
-              background: "rgba(255,255,255,0.0)",
-            }}
-          >
+          <div style={{ width: "100%", borderRadius: 16, overflow: "hidden" }}>
             <Image
               src={hoverPreviewSrc}
               alt={hoveredCard ? hoveredCard.title : "Hover preview"}
@@ -884,6 +877,7 @@ const DiceHomepage = () => {
             />
           </div>
         </div>
+
       </div>
 
       {/* BELOW THE HERO */}
